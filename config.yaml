@@ -1,0 +1,105 @@
+# Dog Stool Detection Model Configuration
+
+# Data Configuration
+data:
+  data_dir: "data"
+  train_dir: "data/train"
+  val_dir: "data/val"
+  test_dir: "data/test"
+  image_size: [224, 224]
+  batch_size: 32
+  num_workers: 4
+
+# Model Configuration
+model:
+  backbone: "efficientnet_b0"  # efficientnet_b0, resnet50, mobilenet_v3_large
+  pretrained: true
+  dropout: 0.3
+
+# Classification Labels
+labels:
+  # 大便类型 (Stool Type)
+  stool_type:
+    - "normal"          # 正常
+    - "soft"            # 软便
+    - "diarrhea"        # 腹泻
+    - "constipation"    # 便秘
+    - "mucus"           # 带粘液
+    - "blood"           # 带血
+    - "undigested_food" # 含未消化食物
+
+  # 大便状态 (Stool Consistency)
+  consistency:
+    - "hard"            # 硬/干燥
+    - "formed"          # 成形
+    - "soft_formed"     # 软但成形
+    - "unformed"        # 不成形
+    - "liquid"          # 液体状
+
+  # 大便颜色 (Stool Color)
+  color:
+    - "brown"           # 健康棕色
+    - "dark_brown"      # 深棕色
+    - "yellow"          # 黄色
+    - "green"           # 绿色
+    - "black"           # 黑色
+    - "red"             # 红色
+    - "white_gray"      # 白色/灰色
+    - "orange"          # 橙色
+
+  # 健康度评估 (Health Assessment)
+  health:
+    - "healthy"         # 健康
+    - "monitor"         # 需观察
+    - "concerning"      # 需注意
+    - "urgent"          # 需就医
+
+# Training Configuration
+training:
+  epochs: 100
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"  # cosine, step, plateau
+  early_stopping_patience: 10
+
+  # Loss weights for multi-task learning
+  loss_weights:
+    stool_type: 1.0
+    consistency: 1.0
+    color: 1.0
+    health: 1.5  # 健康度更重要
+
+  # Optimizer
+  optimizer: "adam"  # adam, sgd, adamw
+
+# Augmentation Configuration
+augmentation:
+  train:
+    horizontal_flip: 0.5
+    vertical_flip: 0.2
+    rotation: 15
+    brightness: 0.2
+    contrast: 0.2
+    saturation: 0.2
+    hue: 0.1
+
+  val:
+    enabled: false
+
+# Checkpoint Configuration
+checkpoint:
+  save_dir: "checkpoints"
+  save_best: true
+  save_freq: 5  # Save every N epochs
+
+# Logging Configuration
+logging:
+  use_tensorboard: true
+  use_wandb: false
+  log_dir: "logs"
+  project_name: "dog-stool-detection"
+
+# Inference Configuration
+inference:
+  confidence_threshold: 0.5
+  batch_size: 8
